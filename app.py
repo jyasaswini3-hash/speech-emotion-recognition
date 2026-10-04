@@ -127,54 +127,6 @@ if uploaded_file is not None:
 
 st.divider()
 
-st.subheader("🎙️ Microphone Recording")
-
-st.write(
-    "You can also record a short voice clip using your browser's "
-    "microphone recorder and upload the recording above."
-)
-
-recorded_audio = st.audio_input("Record your voice")
-
-if recorded_audio is not None:
-    st.audio(recorded_audio)
-
-    if st.button("🎙️ Predict Recorded Voice"):
-        with st.spinner("Analyzing your recording..."):
-            with tempfile.NamedTemporaryFile(
-                delete=False,
-                suffix=".wav"
-            ) as temp_file:
-                temp_file.write(recorded_audio.getbuffer())
-                temp_path = temp_file.name
-
-            try:
-                emotion, probabilities = predict_emotion(temp_path)
-
-                st.success(
-                    f"🎙️ Predicted Emotion: **{emotion.upper()}**"
-                )
-
-                if probabilities is not None:
-                    probability_data = {
-                        emotion_name.upper(): float(probability)
-                        for emotion_name, probability
-                        in zip(label_encoder.classes_, probabilities)
-                    }
-
-                    st.subheader("📊 Prediction Probabilities")
-                    st.bar_chart(probability_data)
-
-            except Exception as e:
-                st.error(
-                    "The recording could not be processed. "
-                    "Please try speaking clearly for a few seconds."
-                )
-                st.exception(e)
-
-            finally:
-                Path(temp_path).unlink(missing_ok=True)
-
 
 st.divider()
 
